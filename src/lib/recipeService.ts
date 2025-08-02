@@ -2,9 +2,16 @@ import Recipe from '@/src/models/Recipe'
 import { connectDB } from '@/src/lib/db'
 
 export async function getAllRecipes() {
-    await connectDB()
-    return await Recipe.find()
+  await connectDB()
+  const recipes = await Recipe.find().lean()  
+  return recipes.map((r) => ({
+    id: r.id.toString(),   
+    name: r.name,
+    image: r.image,
+    rating: r.rating,
+  }))
 }
+
 
 export async function getRecipeById(id: string) {
     await connectDB()
