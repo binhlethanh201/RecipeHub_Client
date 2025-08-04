@@ -7,18 +7,22 @@ type Recipe = {
     name: string
     image: string
     rating: number
+    tags: string[]
 }
 
 export default function RecipeList({ initialRecipes }: { initialRecipes: Recipe[] }) {
     const [query, setQuery] = useState('')
+    const [selectedTags, setSelectedTags] = useState<string | null>(null)
     const [filteredRecipes, setFilteredRecipes] = useState(initialRecipes)
 
+    const allTags = Array.from(new Set(initialRecipes.flatMap(r => r?.tags)))
     useEffect(() => {
-        const results = initialRecipes.filter((r) =>
-            r.name.toLowerCase().includes(query.toLowerCase())
-        )
-        setFilteredRecipes(results)
-    }, [query, initialRecipes])
+        let result = initialRecipes
+        if (query) { result = result.filter((r) => r?.name.toLowerCase().includes(query.toLowerCase())) }
+        if (selectedTags) { result = result.filter((r) => r?.tags.includes(selectedTags)) }
+        setFilteredRecipes(result)
+    }, [query, selectedTags, initialRecipes])
+
 
     return (
         <div className="container py-5">
@@ -83,9 +87,16 @@ export default function RecipeList({ initialRecipes }: { initialRecipes: Recipe[
                     <div className="mb-4 p-3 border rounded">
                         <h5>📌 Tags</h5>
                         <div className="d-flex flex-wrap gap-2">
-                            <span className="badge bg-secondary">Vegan</span>
-                            <span className="badge bg-secondary">Easy</span>
-                            <span className="badge bg-secondary">30-min</span>
+                            {allTags.map((tag) => (
+                                <span
+                                    key={tag}
+                                    className={`badge me-2 mb-2 ${selectedTags === tag ? 'bg-primary' : 'bg-secondary'}`}
+                                    style={{ cursor: 'pointer' }}
+                                    onClick={() => setSelectedTags(selectedTags === tag ? null : tag)}
+                                >
+                                    {tag}
+                                </span>
+                            ))}
                         </div>
                     </div>
 

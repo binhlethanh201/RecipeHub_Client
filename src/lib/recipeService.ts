@@ -9,9 +9,9 @@ export async function getAllRecipes() {
     name: r.name,
     image: r.image,
     rating: r.rating,
+    tags: r.tags || []
   }))
 }
-
 
 export async function getRecipeById(id: string) {
     await connectDB()
