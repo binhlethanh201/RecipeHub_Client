@@ -1,12 +1,18 @@
-import { getRecipeById } from '@/src/lib/recipeService'
+import { getRecipeBySlug, getAllSlugs } from '@/src/lib/recipeService'
 
 type PageProps = {
-  params: { id: string }
+  params: { slug: string }
 }
 
-export default async function RecipeDetail(props: PageProps) {
-  const { id } = await props.params  
-  const recipe = await getRecipeById(id)
+export async function generateStaticParams() {
+  const slugs = await getAllSlugs() 
+  return slugs.map(({ slug }) => ({ slug }))
+}
+
+export default async function RecipeDetail({ params }: PageProps) {
+  const recipe = await getRecipeBySlug(params.slug)
+
+  if (!recipe) return <div>Recipe not found</div>
 
   return (
     <div>

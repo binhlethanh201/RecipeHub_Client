@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 
 type Recipe = {
     id: string
+    slug: string
     name: string
     image: string
     rating: number
@@ -11,46 +12,27 @@ type Recipe = {
 }
 
 export default function RecipeList({ initialRecipes }: { initialRecipes: Recipe[] }) {
-    const [query, setQuery] = useState('')
     const [selectedTags, setSelectedTags] = useState<string | null>(null)
     const [filteredRecipes, setFilteredRecipes] = useState(initialRecipes)
 
     const allTags = Array.from(new Set(initialRecipes.flatMap(r => r?.tags)))
     useEffect(() => {
         let result = initialRecipes
-        if (query) { result = result.filter((r) => r?.name.toLowerCase().includes(query.toLowerCase())) }
         if (selectedTags) { result = result.filter((r) => r?.tags.includes(selectedTags)) }
         setFilteredRecipes(result)
-    }, [query, selectedTags, initialRecipes])
+    }, [ selectedTags, initialRecipes])
 
 
     return (
         <div className="container py-5">
-            <div className="row mb-4">
-                <div className="col-md-8">
-                    <h2 className="fw-bold">🍽️ Food Recipes</h2>
-                    <p className="text-muted">Welcome to our recipe collection!</p>
-                </div>
-                <div className="col-md-4 text-end d-flex align-items-center justify-content-end">
-                    <input
-                        type="text"
-                        className="form-control"
-                        placeholder="🔍 Search the recipe..."
-                        style={{ maxWidth: '250px' }}
-                        value={query}
-                        onChange={(e) => setQuery(e.target.value)}
-                    />
-                </div>
-            </div>
-
             <div className="row">
                 <div className="col-md-8">
                     <div className="row">
                         {filteredRecipes.length > 0 ? (
                             filteredRecipes.map((r) => (
-                                <div className="col-md-6 col-lg-4 mb-4" key={r.id}>
+                                <div className="col-md-6 col-lg-4 mb-4" key={r.id || r.slug}>
                                     <div className="card h-100 shadow-sm">
-                                        <a href={`/recipes/${r.id}`}>
+                                        <a href={`/recipes/${r.slug}`}>
                                             <img
                                                 src={r.image}
                                                 className="card-img-top"
@@ -61,7 +43,7 @@ export default function RecipeList({ initialRecipes }: { initialRecipes: Recipe[
                                         <div className="card-body text-center">
                                             <h5 className="card-title">
                                                 <a
-                                                    href={`/recipes/${r.id}`}
+                                                    href={`/recipes/${r.slug}`}
                                                     className="text-decoration-none text-dark"
                                                 >
                                                     {r.name}

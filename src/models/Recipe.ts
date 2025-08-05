@@ -17,6 +17,7 @@ const recipeSchema = new Schema({
   rating: Number,
   reviewCount: Number,
   mealType: [String],
+  slug: { type: String, required: true, unique: true }
 })
 
 export default mongoose.models.Recipe || mongoose.model('Recipe', recipeSchema)
